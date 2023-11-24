@@ -32,7 +32,6 @@ class YeelightCeiling : public light::LightOutput {  // todo check
 
   bool is_night_light_turn_on{false};
 
-  void night_light_set_level(float state);
   void set_timeout(light::LightState *state, const std::string &name, uint32_t timeout, std::function<void()> &&f);
   bool cancel_timeout(light::LightState *state, const std::string &name);
 };

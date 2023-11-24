@@ -20,9 +20,10 @@ void YeelightCeiling::write_state(light::LightState *state) {
     cold_white_output_->set_level(cwhite);
     warm_white_output_->set_level(wwhite);
     if (is_night_light_turn_on) {
-      this->night_light_set_level(1.0f);
+      night_light_output_->set_level(1.0f);
+      is_night_light_turn_on = false;
       set_timeout(state, "turn_off_night_light", night_light_turn_off_delay_,
-                  [this]() { this->night_light_set_level(0.0f); });
+                  [this]() { this->night_light_output_->set_level(0.0f); });
     }
   } else {
     float night_light_brightness = brightness / night_light_brightness_threshold_;
@@ -30,12 +31,8 @@ void YeelightCeiling::write_state(light::LightState *state) {
     warm_white_output_->turn_off();
     cancel_timeout(state, "turn_off_night_light");
     night_light_set_level(night_light_brightness);
+    is_night_light_turn_on = night_light_brightness > 0.0f;
   }
-}
-
-void YeelightCeiling::night_light_set_level(float state) {
-  night_light_output_->set_level(state);
-  is_night_light_turn_on = state > 0.0f;
 }
 
 void YeelightCeiling::set_timeout(light::LightState *state, const std::string &name, uint32_t timeout,
