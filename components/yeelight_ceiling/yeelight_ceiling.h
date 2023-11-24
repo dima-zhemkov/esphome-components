@@ -18,7 +18,6 @@ class YeelightCeiling : public light::LightOutput {  // todo check
 
   light::LightTraits get_traits() override;
 
-  void setup_state(light::LightState *state) override;
   void write_state(light::LightState *state) override;
 
  private:
