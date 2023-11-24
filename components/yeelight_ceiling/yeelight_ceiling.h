@@ -5,7 +5,7 @@
 namespace esphome {
 namespace yeelight_ceiling {
 
-class YeelightCeiling : public light::LightOutput {  // todo check
+class YeelightCeiling : public light::LightOutput {
  public:
   void set_cold_white(output::FloatOutput *cold_white) { cold_white_output_ = cold_white; }
   void set_warm_white(output::FloatOutput *warm_white) { warm_white_output_ = warm_white; }

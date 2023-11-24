@@ -30,7 +30,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_WARM_WHITE_COLOR_TEMPERATURE, default="2700K"): cv.color_temperature,
             cv.Optional(CONF_CONSTANT_BRIGHTNESS, default=True): cv.boolean,
             cv.Optional(CONF_NIGHT_LIGHT_BRIGHTNESS_THRESHOLD, default=0.105): cv.zero_to_one_float,
-            cv.Optional(CONF_NIGHT_LIGHT_TURN_OFF_DELAY, default="80ms"): cv.positive_time_period_milliseconds,
+            cv.Optional(CONF_NIGHT_LIGHT_TURN_OFF_DELAY, default="50ms"): cv.positive_time_period_milliseconds,
         }
     ),
     cv.has_none_or_all_keys(
