@@ -4,8 +4,6 @@
 namespace esphome {
 namespace yeelight_ceiling {
 
-static const char *const TAG = "yeelight_ceiling";
-
 light::LightTraits YeelightCeiling::get_traits() {
   auto traits = light::LightTraits();
   traits.set_supported_color_modes({light::ColorMode::COLD_WARM_WHITE});
