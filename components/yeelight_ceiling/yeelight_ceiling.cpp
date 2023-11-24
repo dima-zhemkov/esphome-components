@@ -30,7 +30,7 @@ void YeelightCeiling::write_state(light::LightState *state) {
     cold_white_output_->turn_off();
     warm_white_output_->turn_off();
     cancel_timeout(state, "turn_off_night_light");
-    night_light_set_level(night_light_brightness);
+    night_light_output_->set_level(night_light_brightness);
     is_night_light_turn_on = night_light_brightness > 0.0f;
   }
 }
