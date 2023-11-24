@@ -53,8 +53,10 @@ class TransferSwitchComponent : public Component, public Parented<fast_adc::Fast
   float voltage_rms_{0};
 
 #ifdef ESPHOME_LOG_HAS_VERBOSE
-  uint32_t min_period_samples{std::numeric_limits<uint32_t>::max()};
-  uint32_t max_period_samples{std::numeric_limits<uint32_t>::min()};
+  float min_sample_{std::numeric_limits<float>::max()};
+  float max_sample_{std::numeric_limits<float>::min()};
+  uint32_t min_period_samples_{std::numeric_limits<uint32_t>::max()};
+  uint32_t max_period_samples_{std::numeric_limits<uint32_t>::min()};
 #endif
 
   void set_state(bool state);

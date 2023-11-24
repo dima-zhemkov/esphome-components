@@ -71,6 +71,11 @@ void TransferSwitchComponent::process_sample(float sample) {
     }
   }
 
+#ifdef ESPHOME_LOG_HAS_VERBOSE
+  min_sample_ = std::min(min_sample_, sample);
+  max_sample_ = std::max(max_sample_, sample);
+#endif
+
   taskENTER_CRITICAL(&voltage_sum_spinlock_);
   voltage_samples_squared_sum_ += voltage * voltage;
   voltage_samples_count_++;
@@ -102,13 +107,15 @@ void TransferSwitchComponent::measure_voltage() {
   rms_voltage_callback_.call(voltage_rms_);
 
 #ifdef ESPHOME_LOG_HAS_VERBOSE
-  min_period_samples = std::min(min_period_samples, count);
-  max_period_samples = std::max(max_period_samples, count);
+  min_period_samples_ = std::min(min_period_samples_, count);
+  max_period_samples_ = std::max(max_period_samples_, count);
   if (time % 1000000 < 20000) {
-    ESP_LOGV(TAG, "Count: %u, Min count: %u, Max count: %u, V RMS: %f", count, min_period_samples, max_period_samples,
-             voltage_rms_);
-    min_period_samples = std::numeric_limits<uint32_t>::max();
-    max_period_samples = std::numeric_limits<uint32_t>::min();
+    ESP_LOGV(TAG, "Count: %u, Min count: %u, Max count: %u, V RMS: %f, Min V sample: %f, Max V sample: %f", count,
+             min_period_samples_, max_period_samples_, voltage_rms_, min_sample_, max_sample_);
+    min_period_samples_ = std::numeric_limits<uint32_t>::max();
+    max_period_samples_ = std::numeric_limits<uint32_t>::min();
+    min_sample_ = std::numeric_limits<float>::max();
+    max_sample_ = std::numeric_limits<float>::min();
   }
 #endif
 }
