@@ -7,7 +7,7 @@ CODEOWNERS = ["@dima-zhemkov"]
 
 DEPENDENCIES = ["ac_voltage"]
 
-CONF_AC_VOLTAGE = "ac_voltage"
+CONF_AC_VOLTAGE_ID = "ac_voltage_id"
 CONF_INSTANT_SWITCH_DELAY = "instant_switch_delay"
 CONF_RETURN_TO_MAINS_DELAY = "return_to_mains_delay"
 CONF_MIN_VOLTAGE_RMS_THRESHOLD = "min_voltage_rms"
@@ -21,7 +21,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(TransferSwitchComponent),
-            cv.Required(CONF_AC_VOLTAGE): cv.use_id(sensor.Sensor),
+            cv.Required(CONF_AC_VOLTAGE_ID): cv.use_id(sensor.Sensor),
             cv.Optional(CONF_INSTANT_SWITCH_DELAY, default="5ms"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_RETURN_TO_MAINS_DELAY, default="1s"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_MIN_VOLTAGE_RMS_THRESHOLD, default="150V"): cv.voltage,
@@ -35,7 +35,7 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    sensor = await cg.get_variable(config[CONF_AC_VOLTAGE])
+    sensor = await cg.get_variable(config[CONF_AC_VOLTAGE_ID])
     cg.add(var.set_sensor(sensor))
 
     cg.add(var.set_instant_switch_delay(config[CONF_INSTANT_SWITCH_DELAY]))

@@ -19,7 +19,7 @@ MAINS_FREQUENCIES = {
     "60HZ": 60,
 }
 
-CONF_FAST_ADC = "fast_adc_id"
+CONF_FAST_ADC_ID = "fast_adc_id"
 CONF_MULTIPLIER = "multiplier"
 CONF_MIDPIONT = "midpoint"
 CONF_MAINS_FREQUENCY = "mains_frequency"
@@ -39,7 +39,7 @@ CONFIG_SCHEMA = cv.All(
     )
     .extend(
         {
-            cv.GenerateID(CONF_FAST_ADC): cv.use_id(fast_adc.FastADCComponent),
+            cv.GenerateID(CONF_FAST_ADC_ID): cv.use_id(fast_adc.FastADCComponent),
             cv.Optional(CONF_MULTIPLIER, default=207.4): cv.float_range(min=0, min_included=False),
             cv.Optional(CONF_MIDPIONT, default="311V"): cv.voltage,
             cv.Optional(CONF_MAINS_FREQUENCY, default="50HZ"): cv.enum(MAINS_FREQUENCIES, upper=True),
@@ -52,7 +52,7 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await sensor.register_sensor(var, config)
     await cg.register_component(var, config)
-    await cg.register_parented(var, config[CONF_FAST_ADC])
+    await cg.register_parented(var, config[CONF_FAST_ADC_ID])
 
     cg.add(var.set_multiplier(config[CONF_MULTIPLIER]))
     cg.add(var.set_midpoint(config[CONF_MIDPIONT]))
