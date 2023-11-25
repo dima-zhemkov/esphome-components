@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import sensor
+from esphome.components.ac_voltage import sensor as ac_voltage
 from esphome.const import CONF_ID
 
 CODEOWNERS = ["@dima-zhemkov"]
@@ -19,7 +19,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(TransferSwitchComponent),
-            cv.Required(CONF_AC_VOLTAGE_ID): cv.use_id(sensor.Sensor),
+            cv.Required(CONF_AC_VOLTAGE_ID): cv.use_id(ac_voltage.AcVoltageSensor),
             cv.Optional(CONF_INSTANT_SWITCH_DELAY, default="5ms"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_RETURN_TO_MAINS_DELAY, default="1s"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_MIN_VOLTAGE_RMS_THRESHOLD, default="150V"): cv.voltage,
@@ -33,8 +33,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    sensor = await cg.get_variable(config[CONF_AC_VOLTAGE_ID])
-    cg.add(var.set_sensor(sensor))
+    ac_voltage = await cg.get_variable(config[CONF_AC_VOLTAGE_ID])
+    cg.add(var.set_sensor(ac_voltage))
 
     cg.add(var.set_instant_switch_delay(config[CONF_INSTANT_SWITCH_DELAY]))
     cg.add(var.set_return_to_mains_delay(config[CONF_RETURN_TO_MAINS_DELAY]))

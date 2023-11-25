@@ -11,7 +11,7 @@ namespace transfer_switch {
 
 class TransferSwitchComponent : public Component {
  public:
-  void set_sensor(sensor::Sensor *sensor) { ac_sensor_ = dynamic_cast<ac_voltage::AcVoltageSensor *>(sensor); }
+  void set_sensor(ac_voltage::AcVoltageSensor *sensor) { ac_sensor_ = sensor; }
   void set_instant_switch_delay(uint32_t delay) { instant_switch_delay_ = delay; }
   void set_return_to_mains_delay(uint32_t delay) { return_to_mains_delay_ = delay; }
   void set_min_voltage_rms_threshold(float voltage) { min_voltage_rms_threshold_ = voltage; }
