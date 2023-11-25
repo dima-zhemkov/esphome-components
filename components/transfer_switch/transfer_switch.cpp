@@ -8,8 +8,8 @@ static const char *const TAG = "transfer_switch";
 void TransferSwitchComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Transfer Switch...");
 
-  ac_sensor_->add_on_adc_conversion_callback([this](float voltage) { this->process_adc_conversion(voltage); });
-  ac_sensor_->add_on_period_callback([this](float voltage_rms) { this->process_period(voltage_rms); });
+  parent_->add_on_adc_conversion_callback([this](float voltage) { this->process_adc_conversion(voltage); });
+  parent_->add_on_period_callback([this](float voltage_rms) { this->process_period(voltage_rms); });
 
   ESP_LOGCONFIG(TAG, "Transfer Switch setup finished!");
 }
