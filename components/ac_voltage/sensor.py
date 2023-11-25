@@ -39,9 +39,7 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await sensor.register_sensor(var, config)
     await cg.register_component(var, config)
-
-    parent = await cg.get_variable(config[CONF_FAST_ADC])
-    cg.add(var.set_parent(parent))
+    await cg.register_parented(var, config[CONF_FAST_ADC])
 
     cg.add(var.set_multiplier(config[CONF_MULTIPLIER]))
     cg.add(var.set_midpoint(config[CONF_MIDPIONT]))

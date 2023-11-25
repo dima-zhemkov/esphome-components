@@ -8,9 +8,8 @@
 namespace esphome {
 namespace transfer_switch {
 
-class TransferSwitchComponent : public Component {
+class TransferSwitchComponent : public Component, Parented<ac_voltage::AcVoltageSensor> {
  public:
-  void set_ac_voltage(ac_voltage::AcVoltageSensor *ac_voltage) { ac_voltage_ = ac_voltage; }
   void set_instant_switch_delay(uint32_t delay) { instant_switch_delay_ = delay; }
   void set_return_to_mains_delay(uint32_t delay) { return_to_mains_delay_ = delay; }
   void set_min_voltage_rms_threshold(float voltage) { min_voltage_rms_threshold_ = voltage; }
@@ -22,8 +21,6 @@ class TransferSwitchComponent : public Component {
   void add_on_state_callback(std::function<void(bool)> &&callback);
 
  private:
-  ac_voltage::AcVoltageSensor *ac_voltage_{nullptr};
-
   uint32_t instant_switch_delay_{0};   // delay in microseconds
   uint32_t return_to_mains_delay_{0};  // delay in microseconds
   float min_voltage_rms_threshold_{NAN};
