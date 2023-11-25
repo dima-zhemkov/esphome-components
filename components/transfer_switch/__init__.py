@@ -5,8 +5,6 @@ from esphome.const import CONF_ID
 
 CODEOWNERS = ["@dima-zhemkov"]
 
-DEPENDENCIES = ["ac_voltage"]
-
 CONF_AC_VOLTAGE_ID = "ac_voltage_id"
 CONF_INSTANT_SWITCH_DELAY = "instant_switch_delay"
 CONF_RETURN_TO_MAINS_DELAY = "return_to_mains_delay"
