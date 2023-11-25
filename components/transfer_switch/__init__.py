@@ -5,7 +5,7 @@ from esphome.const import CONF_ID
 
 CODEOWNERS = ["@dima-zhemkov"]
 
-CONF_AC_VOLTAGE_ID = "ac_voltage_id"
+CONF_AC_VOLTAGE = "ac_voltage"
 CONF_INSTANT_SWITCH_DELAY = "instant_switch_delay"
 CONF_RETURN_TO_MAINS_DELAY = "return_to_mains_delay"
 CONF_MIN_VOLTAGE_RMS_THRESHOLD = "min_voltage_rms"
@@ -19,7 +19,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(TransferSwitchComponent),
-            cv.GenerateID(CONF_AC_VOLTAGE_ID): cv.use_id(ac_voltage.AcVoltageSensor),
+            cv.Required(CONF_AC_VOLTAGE): cv.use_id(ac_voltage.AcVoltageSensor),
             cv.Optional(CONF_INSTANT_SWITCH_DELAY, default="5ms"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_RETURN_TO_MAINS_DELAY, default="1s"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_MIN_VOLTAGE_RMS_THRESHOLD, default="150V"): cv.voltage,
@@ -32,7 +32,7 @@ CONFIG_SCHEMA = cv.All(
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    await cg.register_parented(var, config[CONF_AC_VOLTAGE_ID])
+    await cg.register_parented(var, config[CONF_AC_VOLTAGE])
 
     cg.add(var.set_instant_switch_delay(config[CONF_INSTANT_SWITCH_DELAY]))
     cg.add(var.set_return_to_mains_delay(config[CONF_RETURN_TO_MAINS_DELAY]))
