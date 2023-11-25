@@ -8,7 +8,7 @@
 namespace esphome {
 namespace transfer_switch {
 
-class TransferSwitchComponent : public Component, Parented<ac_voltage::AcVoltageSensor> {
+class TransferSwitchComponent : public Component, public Parented<ac_voltage::AcVoltageSensor> {
  public:
   void set_instant_switch_delay(uint32_t delay) { instant_switch_delay_ = delay; }
   void set_return_to_mains_delay(uint32_t delay) { return_to_mains_delay_ = delay; }
