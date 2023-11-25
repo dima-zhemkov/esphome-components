@@ -7,13 +7,26 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT,
     UNIT_VOLT,
 )
-from . import (
-    AcVoltageSensor,
-    MAINS_FREQUENCIES,
-    CONF_FAST_ADC,
-    CONF_MULTIPLIER,
-    CONF_MIDPIONT,
-    CONF_MAINS_FREQUENCY,
+
+CODEOWNERS = ["@dima-zhemkov"]
+
+DEPENDENCIES = ["fast_adc"]
+
+AUTO_LOAD = ["voltage_sampler"]
+
+MAINS_FREQUENCIES = {
+    "50HZ": 50,
+    "60HZ": 60,
+}
+
+CONF_FAST_ADC = "fast_adc_id"
+CONF_MULTIPLIER = "multiplier"
+CONF_MIDPIONT = "midpoint"
+CONF_MAINS_FREQUENCY = "mains_frequency"
+
+ac_voltage_ns = cg.esphome_ns.namespace("ac_voltage")
+AcVoltageSensor = ac_voltage_ns.class_(
+    "AcVoltageSensor", sensor.Sensor, cg.PollingComponent, voltage_sampler.VoltageSampler
 )
 
 CONFIG_SCHEMA = cv.All(
