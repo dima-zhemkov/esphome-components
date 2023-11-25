@@ -61,7 +61,7 @@ void FastADCComponent::setup() {
   }
 
   xTaskCreatePinnedToCore(&FastADCComponent::adc_task,
-                          "adc_dma_task",             // name
+                          "fast_adc_task",            // name
                           4096,                       // stack size
                           static_cast<void *>(this),  // task pv params
                           23,                         // priority
@@ -81,20 +81,18 @@ void FastADCComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Calibration Data Size: %u", calibration_data_.size());
 }
 
-uint32_t FastADCComponent::get_frequency() {
-  return frequency_;
-}
-
-void FastADCComponent::add_on_sample_callback(std::function<void(float)> &&callback) {
-  this->sample_callback_.add(std::move(callback));
+void FastADCComponent::add_on_conversion_callback(std::function<void(float)> &&callback) {
+  this->conversion_callback_.add(std::move(callback));
 }
 
 void FastADCComponent::adc_task(void *pv) {
   FastADCComponent *transfer_switch = static_cast<FastADCComponent *>(pv);
 
-  uint32_t max_length = transfer_switch->buffer_max_length_;
-  uint32_t length = 0;
-  esp_err_t state;
+  const uint32_t max_length = transfer_switch->buffer_max_length_;
+  const uint32_t oversampling = transfer_switch->oversampling_;
+  const float mv_conversion_factor = 1.0f / 1000.0f;
+  const float mv_conversion_oversampling_reciprocal = mv_conversion_factor / oversampling;
+
   float sum_mv = 0;
   uint16_t count = 0;
 
@@ -108,7 +106,8 @@ void FastADCComponent::adc_task(void *pv) {
   ESP_ERROR_CHECK(adc_digi_start());
 
   while (true) {
-    state = adc_digi_read_bytes(buffer, max_length, &length, ADC_MAX_DELAY);
+    uint32_t length;
+    auto state = adc_digi_read_bytes(buffer, max_length, &length, ADC_MAX_DELAY);
 
     if (state == ESP_ERR_INVALID_STATE) {
       ESP_ERROR_CHECK(adc_digi_stop());
@@ -118,13 +117,13 @@ void FastADCComponent::adc_task(void *pv) {
     }
 
     for (int i = 0; i < length; i += ADC_RESULT_BYTE) {
-      adc_digi_output_data_t *p = (adc_digi_output_data_t *) (&buffer[i]);
+      auto p = reinterpret_cast<adc_digi_output_data_t *>(&buffer[i]);
       sum_mv += transfer_switch->adc_cal_raw_to_mv(p->type1.data);
       count++;
 
-      if (count == transfer_switch->oversampling_) {
-        auto voltage = sum_mv / count / 1000.0f;
-        transfer_switch->sample_callback_.call(voltage);
+      if (count == oversampling) {
+        auto voltage = sum_mv * mv_conversion_oversampling_reciprocal;
+        transfer_switch->conversion_callback_.call(voltage);
         sum_mv = 0;
         count = 0;
       }
@@ -132,13 +131,13 @@ void FastADCComponent::adc_task(void *pv) {
   }
 }
 
-float FastADCComponent::adc_cal_raw_to_mv(uint16_t adc_reading) {
-  if (calibration_data_.empty()) {
+float HOT FastADCComponent::adc_cal_raw_to_mv(uint16_t adc_reading) {
+#ifdef USE_EXTERNAL_CALUBRATION
+  return calibration_data_[adc_reading];
+#else
     auto mv = esp_adc_cal_raw_to_voltage(adc_reading, &adc_cal_characteristics_);
     return static_cast<float>(mv);
-  } else {
-    return calibration_data_[adc_reading];
-  }
+#endif
 }
 
 uint32_t FastADCComponent::adc_oversampling_to_buffer_max_length(uint32_t oversampling) {

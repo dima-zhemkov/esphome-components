@@ -22,8 +22,7 @@ class FastADCComponent : public Component {
   void setup() override;
   void dump_config() override;
 
-  uint32_t get_frequency();
-  void add_on_sample_callback(std::function<void(float)> &&callback);
+  void add_on_conversion_callback(std::function<void(float)> &&callback);
 
  private:
   GPIOPin *pin_{nullptr};
@@ -32,7 +31,7 @@ class FastADCComponent : public Component {
   uint32_t oversampling_{0};
   std::vector<float> calibration_data_;
 
-  CallbackManager<void(float)> sample_callback_{};
+  CallbackManager<void(float)> conversion_callback_{};
   esp_adc_cal_characteristics_t adc_cal_characteristics_{};
   uint32_t buffer_max_length_{0};
 
@@ -42,7 +41,7 @@ class FastADCComponent : public Component {
   uint32_t adc_oversampling_to_buffer_max_length(uint32_t oversampling);
 };
 
-}  // namespace transfer_switch
+}  // namespace fast_adc
 }  // namespace esphome
 
 #endif

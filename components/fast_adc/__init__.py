@@ -90,3 +90,4 @@ async def to_code(config):
     
     if CONF_CALIBRATION in config:
         cg.add(var.set_calibration_data(config[CONF_CALIBRATION]))
+        cg.add_build_flag("-DUSE_EXTERNAL_CALUBRATION")

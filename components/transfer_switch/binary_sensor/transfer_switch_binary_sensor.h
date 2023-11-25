@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef USE_ESP32
-
 #include "../transfer_switch.h"
 
 #include "esphome/core/component.h"
@@ -27,5 +25,3 @@ class TransferSwitchBinarySensor : public Component,
 
 }  // namespace transfer_switch
 }  // namespace esphome
-
-#endif

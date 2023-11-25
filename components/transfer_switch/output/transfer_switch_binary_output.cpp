@@ -1,5 +1,3 @@
-#ifdef USE_ESP32
-
 #include "transfer_switch_binary_output.h"
 #include "esphome/core/log.h"
 
@@ -29,5 +27,3 @@ void TransferSwitchBinaryOutput::write_state(bool state) { pin_->digital_write(s
 
 }  // namespace transfer_switch
 }  // namespace esphome
-
-#endif

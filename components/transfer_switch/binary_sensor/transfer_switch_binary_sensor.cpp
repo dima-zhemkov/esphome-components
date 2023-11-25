@@ -1,5 +1,3 @@
-#ifdef USE_ESP32
-
 #include "transfer_switch_binary_sensor.h"
 #include "esphome/core/log.h"
 
@@ -20,5 +18,3 @@ void TransferSwitchBinarySensor::loop() { publish_state(this->state_); }
 
 }  // namespace transfer_switch
 }  // namespace esphome
-
-#endif

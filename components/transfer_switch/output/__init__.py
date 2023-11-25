@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import pins
-from esphome.components import esp32, output
+from esphome.components import output
 from esphome.const import (
     CONF_ID,
     CONF_PIN,
@@ -26,8 +26,6 @@ CONFIG_SCHEMA = cv.All(
         }
     )
     .extend(cv.COMPONENT_SCHEMA),
-    cv.only_on_esp32,
-    esp32.only_on_variant(supported=[esp32.const.VARIANT_ESP32]),
 )
 
 async def to_code(config):
