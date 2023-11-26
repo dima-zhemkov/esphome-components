@@ -5,8 +5,8 @@ from esphome.components.ac_voltage import sensor as ac_voltage
 from esphome.const import (
     CONF_ID,
     CONF_OUTPUT,
-    CONF_STATE,
-    DEVICE_CLASS_SWITCH,
+    CONF_POWER,
+    DEVICE_CLASS_POWER,
 )
 
 CODEOWNERS = ["@dima-zhemkov"]
@@ -33,8 +33,8 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_RETURN_TO_MAINS_DELAY, default="1s"): cv.positive_time_period_microseconds,
             cv.Optional(CONF_MIN_VOLTAGE_RMS_THRESHOLD, default="150V"): cv.voltage,
             cv.Optional(CONF_INSTANT_SWITCH_VOLTAGE_THRESHOLD, default="80V"): cv.voltage,
-            cv.Optional(CONF_STATE): binary_sensor.binary_sensor_schema(
-                device_class=DEVICE_CLASS_SWITCH,
+            cv.Optional(CONF_POWER): binary_sensor.binary_sensor_schema(
+                device_class=DEVICE_CLASS_POWER,
             ),
         }
     )
@@ -54,6 +54,6 @@ async def to_code(config):
     output_ = await cg.get_variable(config[CONF_OUTPUT])
     cg.add(var.set_output(output_))
 
-    if CONF_STATE in config:
-        sensor_ = await binary_sensor.new_binary_sensor(config[CONF_STATE])
-        cg.add(var.set_state_sensor(sensor_))
+    if CONF_POWER in config:
+        sensor_ = await binary_sensor.new_binary_sensor(config[CONF_POWER])
+        cg.add(var.set_power_sensor(sensor_))

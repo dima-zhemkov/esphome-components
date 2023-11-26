@@ -11,7 +11,7 @@ namespace transfer_switch {
 class TransferSwitchComponent : public Component, public Parented<ac_voltage::AcVoltageSensor> {
  public:
   void set_output(output::BinaryOutput *output) { output_ = output; }
-  void set_state_sensor(binary_sensor::BinarySensor *sensor) { this->state_sensor_ = sensor; }
+  void set_power_sensor(binary_sensor::BinarySensor *sensor) { this->power_sensor_ = sensor; }
   void set_instant_switch_delay(uint32_t delay) { instant_switch_delay_ = delay; }
   void set_return_to_mains_delay(uint32_t delay) { return_to_mains_delay_ = delay; }
   void set_min_voltage_rms_threshold(float voltage) { min_voltage_rms_threshold_ = voltage; }
@@ -24,21 +24,25 @@ class TransferSwitchComponent : public Component, public Parented<ac_voltage::Ac
 
  private:
   output::BinaryOutput *output_{nullptr};
-  binary_sensor::BinarySensor *state_sensor_{nullptr};
+  binary_sensor::BinarySensor *power_sensor_{nullptr};
   uint32_t instant_switch_delay_{0};   // delay in microseconds
   uint32_t return_to_mains_delay_{0};  // delay in microseconds
   float min_voltage_rms_threshold_{NAN};
   float instant_switch_voltage_threshold_{NAN};
 
-  CallbackManager<void(bool)> state_callback_{};
-  Deduplicator<bool> state_dedup_;
-  bool state_{false};
+  enum class PowerSource : uint32_t {
+    MAINS = 0,
+    BATTERY = 1,
+  };
+
+  Deduplicator<PowerSource> power_source_dedup_;
+  PowerSource power_source_{PowerSource::MAINS};
 
   esp_timer_handle_t *timer_{nullptr};
   int64_t undervoltage_start_{0};
   int64_t stable_voltage_start_{0};
 
-  void set_state(bool state);
+  void set_power_source(PowerSource value);
 
   void process_adc_conversion(float voltage);
   void process_period(float voltage_rms);

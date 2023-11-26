@@ -23,28 +23,25 @@ void TransferSwitchComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Return to Mains Delay: %uus", return_to_mains_delay_);
   ESP_LOGCONFIG(TAG, "  Min Voltage RMS Threshold: %.1fV", min_voltage_rms_threshold_);
 
-  LOG_BINARY_SENSOR("  ", "State Sensor", state_sensor_);
+  LOG_BINARY_SENSOR("  ", "Power Sensor", power_sensor_);
 }
 
-void TransferSwitchComponent::add_on_state_callback(std::function<void(bool)> &&callback) {
-  state_callback_.add(std::move(callback));
-}
-
-void HOT TransferSwitchComponent::set_state(bool state) {
-  if (!this->state_dedup_.next(state)) {
+void HOT TransferSwitchComponent::set_power_source(PowerSource value) {
+  if (!power_source_dedup_.next(value)) {
     return;
   }
 
-  state_ = state;
-  output_->set_state(state);
+  power_source_ = value;
+  output_->set_state(value == PowerSource::BATTERY);
 
-  if (state_sensor_) {
-    defer("publish_state", [this, state]() { this->state_sensor_->publish_state(state); });
+  if (power_sensor_) {
+    auto state = value == PowerSource::MAINS;
+    defer("publish_state", [this, state]() { this->power_sensor_->publish_state(state); });
   }
 }
 
 void HOT TransferSwitchComponent::process_adc_conversion(float voltage) {
-  if (!state_) {
+  if (power_source_ == PowerSource::MAINS) {
     auto time = esp_timer_get_time();
 
     if (!undervoltage_start_ || voltage >= instant_switch_voltage_threshold_) {
@@ -53,13 +50,13 @@ void HOT TransferSwitchComponent::process_adc_conversion(float voltage) {
 
     if ((time - undervoltage_start_) >= instant_switch_delay_) {
       stable_voltage_start_ = 0;
-      set_state(true);
+      set_power_source(PowerSource::BATTERY);
     }
   }
 }
 
 void HOT TransferSwitchComponent::process_period(float voltage_rms) {
-  if (state_) {
+  if (power_source_ == PowerSource::BATTERY) {
     auto time = esp_timer_get_time();
 
     if (!stable_voltage_start_ || voltage_rms < min_voltage_rms_threshold_) {
@@ -68,7 +65,7 @@ void HOT TransferSwitchComponent::process_period(float voltage_rms) {
 
     if ((time - stable_voltage_start_) >= return_to_mains_delay_) {
       undervoltage_start_ = 0;
-      set_state(false);
+      set_power_source(PowerSource::MAINS);
     }
   }
 }
