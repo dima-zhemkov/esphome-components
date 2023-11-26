@@ -7,16 +7,22 @@ namespace ac_transfer_switch {
 static const char *const TAG = "ac_transfer_switch";
 
 void AcTransferSwitchComponent::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up Transfer Switch...");
+  ESP_LOGCONFIG(TAG, "Setting up AC Transfer Switch...");
+
+  output_->set_state(power_source_ == PowerSource::BACKUP);
+
+  if (power_sensor_) {
+    this->power_sensor_->publish_state(power_source_ == PowerSource::PRIMARY);
+  }
 
   parent_->add_on_adc_conversion_callback([this](float voltage) { this->process_adc_conversion(voltage); });
   parent_->add_on_period_callback([this](float voltage_rms) { this->process_period(voltage_rms); });
 
-  ESP_LOGCONFIG(TAG, "Transfer Switch setup finished!");
+  ESP_LOGCONFIG(TAG, "AC Transfer Switch setup finished!");
 }
 
 void AcTransferSwitchComponent::dump_config() {
-  ESP_LOGCONFIG(TAG, "Transfer Switch:");
+  ESP_LOGCONFIG(TAG, "AC Transfer Switch:");
 
   ESP_LOGCONFIG(TAG, "  Backup Switch Delay: %uus", backup_switch_delay_);
   ESP_LOGCONFIG(TAG, "  Backup Switch Voltage Threshold: %.3fV", backup_switch_voltage_threshold_);
@@ -32,10 +38,11 @@ void HOT AcTransferSwitchComponent::set_power_source(PowerSource value) {
   }
 
   power_source_ = value;
-  output_->set_state(value == PowerSource::BACKUP);
+
+  output_->set_state(power_source_ == PowerSource::BACKUP);
 
   if (power_sensor_) {
-    auto state = value == PowerSource::PRIMARY;
+    auto state = power_source_ == PowerSource::PRIMARY;
     defer("publish_state", [this, state]() { this->power_sensor_->publish_state(state); });
   }
 }
