@@ -1,0 +1,116 @@
+substitutions:
+  name: yeelight-light-ceiling22
+  friendly_name: Ceiling Light
+
+esphome:
+  name: $name
+  friendly_name: $friendly_name
+
+esp32:
+  board: esp32doit-devkit-v1
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_FREERTOS_UNICORE: y
+    advanced:
+      ignore_efuse_mac_crc: true
+    version: recommended
+
+preferences:
+  flash_write_interval: 1h
+
+external_components:
+  - source: github://dima-zhemkov/esphome-components@main
+    components: [yeelight_ceiling]
+    refresh: 1d
+
+# Enable logging
+logger:
+  level: DEBUG
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+sensor:
+  - platform: wifi_signal
+    name: WiFi Signal
+    entity_category: diagnostic
+    update_interval: 60s
+  - platform: internal_temperature
+    name: Internal Temperature
+    entity_category: diagnostic
+  - platform: adc
+    pin: GPIO36
+    name: "Power supply"
+    attenuation: 11db
+    update_interval: 0.5s
+    entity_category: diagnostic
+    filters:
+      - sliding_window_moving_average:
+          window_size: 60
+      - delta: 0.01
+
+power_supply:
+  - id: power_supply1
+    pin: GPIO22
+
+output:
+  - platform: ledc
+    pin: GPIO19
+    id: output_warm
+    frequency: "2441Hz"
+    max_power: 0.50
+    power_supply: power_supply1
+    zero_means_zero: true
+  - platform: ledc
+    pin: GPIO21
+    id: output_cold
+    frequency: "2441Hz"
+    max_power: 0.95
+    power_supply: power_supply1
+    zero_means_zero: true
+  - platform: ledc
+    pin: GPIO23
+    id: output_nightlight
+    frequency: "19531Hz"
+    min_power: 0.10
+    max_power: 1.00
+    power_supply: power_supply1
+    zero_means_zero: true
+
+light:
+  - platform: yeelight_ceiling
+    id: yeelight_light_ceiling22
+    name: None
+    cold_white: output_cold
+    warm_white: output_warm
+    night_light: output_nightlight
+
+    # Optional, the color temperature (in mireds or Kelvin) of the cold white channel. Default: 6000K
+    cold_white_color_temperature: 6000K
+
+    # Optional, the color temperature (in mireds or Kelvin) of the warm white channe. Default: 2700K
+    warm_white_color_temperature: 2700K
+
+    # Optional, this will keep the overall brightness of the cold and warm white channels constant
+    # by limiting the combined output to 100% of a single channel. Defaault: true
+    constant_brightness: true
+
+    # Optional, the brightness threshold that activates the night light. Default: 0.105
+    night_light_brightness_threshold: 0.105
+
+    # Optional, the duration for which the night light remains active to prevent blinking when
+    # transitioning to bright light. Default: 50ms
+    night_light_turn_off_delay: 50ms
+
+    gamma_correct: 0
+    default_transition_length: 0.5s
+    restore_mode: RESTORE_AND_ON
