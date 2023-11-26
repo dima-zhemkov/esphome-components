@@ -1,4 +1,5 @@
 #include "transfer_switch.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace transfer_switch {
@@ -17,28 +18,35 @@ void TransferSwitchComponent::setup() {
 void TransferSwitchComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "Transfer Switch:");
 
-  ESP_LOGCONFIG(TAG, "  Instant switch delay: %uus", instant_switch_delay_);
+  ESP_LOGCONFIG(TAG, "  Instant switch Delay: %uus", instant_switch_delay_);
   ESP_LOGCONFIG(TAG, "  Instant Switch Voltage Threshold: %.3fV", instant_switch_voltage_threshold_);
   ESP_LOGCONFIG(TAG, "  Return to Mains Delay: %uus", return_to_mains_delay_);
   ESP_LOGCONFIG(TAG, "  Min Voltage RMS Threshold: %.1fV", min_voltage_rms_threshold_);
+
+  LOG_BINARY_SENSOR("  ", "State Sensor", state_sensor_);
 }
 
 void TransferSwitchComponent::add_on_state_callback(std::function<void(bool)> &&callback) {
   state_callback_.add(std::move(callback));
 }
 
-void TransferSwitchComponent::set_state(bool state) {
-  if (!this->state_dedup_.next(state))
+void HOT TransferSwitchComponent::set_state(bool state) {
+  if (!this->state_dedup_.next(state)) {
     return;
+  }
 
   state_ = state;
-  state_callback_.call(state);
+  output_->set_state(state);
+
+  if (state_sensor_) {
+    defer("publish_state", [this, state]() { this->state_sensor_->publish_state(state); });
+  }
 }
 
 void HOT TransferSwitchComponent::process_adc_conversion(float voltage) {
-  auto time = esp_timer_get_time();
-
   if (!state_) {
+    auto time = esp_timer_get_time();
+
     if (!undervoltage_start_ || voltage >= instant_switch_voltage_threshold_) {
       undervoltage_start_ = time;
     }
@@ -51,8 +59,9 @@ void HOT TransferSwitchComponent::process_adc_conversion(float voltage) {
 }
 
 void HOT TransferSwitchComponent::process_period(float voltage_rms) {
-  auto time = esp_timer_get_time();
   if (state_) {
+    auto time = esp_timer_get_time();
+
     if (!stable_voltage_start_ || voltage_rms < min_voltage_rms_threshold_) {
       stable_voltage_start_ = time;
     }

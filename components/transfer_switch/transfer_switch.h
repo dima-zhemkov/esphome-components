@@ -1,15 +1,17 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/components/output/binary_output.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/ac_voltage/ac_voltage.h"
-#include "esphome/core/hal.h"
-#include "esphome/core/log.h"
 
 namespace esphome {
 namespace transfer_switch {
 
 class TransferSwitchComponent : public Component, public Parented<ac_voltage::AcVoltageSensor> {
  public:
+  void set_output(output::BinaryOutput *output) { output_ = output; }
+  void set_state_sensor(binary_sensor::BinarySensor *sensor) { this->state_sensor_ = sensor; }
   void set_instant_switch_delay(uint32_t delay) { instant_switch_delay_ = delay; }
   void set_return_to_mains_delay(uint32_t delay) { return_to_mains_delay_ = delay; }
   void set_min_voltage_rms_threshold(float voltage) { min_voltage_rms_threshold_ = voltage; }
@@ -21,6 +23,8 @@ class TransferSwitchComponent : public Component, public Parented<ac_voltage::Ac
   void add_on_state_callback(std::function<void(bool)> &&callback);
 
  private:
+  output::BinaryOutput *output_{nullptr};
+  binary_sensor::BinarySensor *state_sensor_{nullptr};
   uint32_t instant_switch_delay_{0};   // delay in microseconds
   uint32_t return_to_mains_delay_{0};  // delay in microseconds
   float min_voltage_rms_threshold_{NAN};
