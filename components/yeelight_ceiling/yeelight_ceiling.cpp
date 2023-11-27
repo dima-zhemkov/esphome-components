@@ -16,7 +16,7 @@ void YeelightCeiling::write_state(light::LightState *state) {
   float brightness, cwhite, wwhite;
   state->current_values_as_brightness(&brightness);
   if (brightness > night_light_brightness_threshold_) {
-    get_cwww(state, &cwhite, &wwhite);
+    state->current_values_as_cwww(&cwhite, &wwhite, constant_brightness_);
     cold_white_output_->set_level(cwhite);
     warm_white_output_->set_level(wwhite);
     if (is_night_light_turn_on) {
@@ -33,15 +33,6 @@ void YeelightCeiling::write_state(light::LightState *state) {
     night_light_output_->set_level(night_light_brightness);
     is_night_light_turn_on = night_light_brightness > 0.0f;
   }
-}
-
-void YeelightCeiling::get_cwww(light::LightState *state, float *cold_white, float *warm_white) {
-  auto current_values = state->current_values;
-  auto old_brightness = current_values.get_brightness();
-  float brightness = (old_brightness - night_light_brightness_threshold_) / (1.0f - night_light_brightness_threshold_);
-  current_values.set_brightness(brightness);
-  current_values.as_cwww(cold_white, warm_white, state->get_gamma_correct(), constant_brightness_);
-  current_values.set_brightness(old_brightness);
 }
 
 void YeelightCeiling::set_timeout(light::LightState *state, const std::string &name, uint32_t timeout,
