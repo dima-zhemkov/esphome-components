@@ -28,7 +28,7 @@ class AcVoltageSensor : public sensor::Sensor,
   void add_on_adc_conversion_callback(std::function<void(float)> &&callback);
   void add_on_period_callback(std::function<void(float)> &&callback);
 
- private:
+ protected:
   adc_channel_t adc_channel_{ADC_CHANNEL_MAX};
   float multiplier_{NAN};
   float midpoint_{NAN};

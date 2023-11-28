@@ -24,7 +24,7 @@ class FastADCComponent : public Component {
 
   void add_on_conversion_callback(std::function<void(float)> &&callback);
 
- private:
+ protected:
   GPIOPin *pin_{nullptr};
   adc_channel_t channel_{ADC_CHANNEL_MAX};
   uint32_t frequency_{0};
@@ -38,7 +38,6 @@ class FastADCComponent : public Component {
   static void adc_task(void *pv);
 
   float adc_cal_raw_to_mv(uint16_t adc_reading);
-  uint32_t adc_oversampling_to_buffer_max_length(uint32_t oversampling);
 };
 
 }  // namespace fast_adc

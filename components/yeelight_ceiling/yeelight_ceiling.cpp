@@ -7,31 +7,31 @@ namespace yeelight_ceiling {
 light::LightTraits YeelightCeiling::get_traits() {
   auto traits = light::LightTraits();
   traits.set_supported_color_modes({light::ColorMode::COLD_WARM_WHITE});
-  traits.set_min_mireds(cold_white_temperature_);
-  traits.set_max_mireds(warm_white_temperature_);
+  traits.set_min_mireds(this->cold_white_temperature_);
+  traits.set_max_mireds(this->warm_white_temperature_);
   return traits;
 }
 
 void YeelightCeiling::write_state(light::LightState *state) {
   float brightness, cwhite, wwhite;
   state->current_values_as_brightness(&brightness);
-  if (brightness > night_light_brightness_threshold_) {
-    state->current_values_as_cwww(&cwhite, &wwhite, constant_brightness_);
-    cold_white_output_->set_level(cwhite);
-    warm_white_output_->set_level(wwhite);
-    if (is_night_light_turn_on) {
-      night_light_output_->set_level(1.0f);
-      is_night_light_turn_on = false;
-      set_timeout(state, "turn_off_night_light", night_light_turn_off_delay_,
-                  [this]() { this->night_light_output_->set_level(0.0f); });
+  if (brightness > this->night_light_brightness_threshold_) {
+    state->current_values_as_cwww(&cwhite, &wwhite, this->constant_brightness_);
+    this->cold_white_output_->set_level(cwhite);
+    this->warm_white_output_->set_level(wwhite);
+    if (this->is_night_light_turn_on_) {
+      this->night_light_output_->set_level(1.0f);
+      this->is_night_light_turn_on_ = false;
+      this->set_timeout(state, "turn_off_night_light", this->night_light_turn_off_delay_,
+                        [this]() { this->night_light_output_->set_level(0.0f); });
     }
   } else {
-    float night_light_brightness = brightness / night_light_brightness_threshold_;
-    cold_white_output_->turn_off();
-    warm_white_output_->turn_off();
-    cancel_timeout(state, "turn_off_night_light");
-    night_light_output_->set_level(night_light_brightness);
-    is_night_light_turn_on = night_light_brightness > 0.0f;
+    float night_light_brightness = brightness / this->night_light_brightness_threshold_;
+    this->cold_white_output_->turn_off();
+    this->warm_white_output_->turn_off();
+    this->cancel_timeout(state, "turn_off_night_light");
+    this->night_light_output_->set_level(night_light_brightness);
+    this->is_night_light_turn_on_ = night_light_brightness > 0.0f;
   }
 }
 

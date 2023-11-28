@@ -12,15 +12,15 @@ static const uint32_t ADC_RESULT_BYTE = sizeof(adc_digi_output_data_t);
 void FastADCComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Fast ADC...");
 
-  pin_->setup();
+  this->pin_->setup();
 
-  buffer_max_length_ = adc_oversampling_to_buffer_max_length(oversampling_);
+  this->buffer_max_length_ = this->oversampling_ * ADC_RESULT_BYTE;
 
-  uint8_t ch = static_cast<uint8_t>(channel_);
+  uint8_t ch = static_cast<uint8_t>(this->channel_);
 
   adc_digi_init_config_t adc_dma_config = {
       .max_store_buf_size = 1024,
-      .conv_num_each_intr = buffer_max_length_,
+      .conv_num_each_intr = this->buffer_max_length_,
       .adc1_chan_mask = BIT(ch),
       .adc2_chan_mask = 0UL,
   };
@@ -38,7 +38,7 @@ void FastADCComponent::setup() {
       .conv_limit_num = 250,
       .pattern_num = sizeof(adc_pattern) / sizeof(adc_digi_pattern_config_t),
       .adc_pattern = adc_pattern,
-      .sample_freq_hz = frequency_ * oversampling_,
+      .sample_freq_hz = this->frequency_ * this->oversampling_,
       .conv_mode = ADC_CONV_SINGLE_UNIT_1,
       .format = ADC_DIGI_OUTPUT_FORMAT_TYPE1,
   };
@@ -47,7 +47,7 @@ void FastADCComponent::setup() {
 
   auto cal_value = esp_adc_cal_characterize(ADC_UNIT_1, (adc_atten_t) ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12,
                                             1100,  // default vref
-                                            &adc_cal_characteristics_);
+                                            &this->adc_cal_characteristics_);
   switch (cal_value) {
     case ESP_ADC_CAL_VAL_EFUSE_VREF:
       ESP_LOGV(TAG, "Using eFuse Vref for calibration");
@@ -74,11 +74,11 @@ void FastADCComponent::setup() {
 
 void FastADCComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "Fast ADC:");
-  LOG_PIN("  Pin: ", pin_);
+  LOG_PIN("  Pin: ", this->pin_);
 
-  ESP_LOGCONFIG(TAG, "  Frequency: %uHz", frequency_);
-  ESP_LOGCONFIG(TAG, "  Oversampling: %u", oversampling_);
-  ESP_LOGCONFIG(TAG, "  Calibration Data Size: %u", calibration_data_.size());
+  ESP_LOGCONFIG(TAG, "  Frequency: %uHz", this->frequency_);
+  ESP_LOGCONFIG(TAG, "  Oversampling: %u", this->oversampling_);
+  ESP_LOGCONFIG(TAG, "  Calibration Data Size: %u", this->calibration_data_.size());
 }
 
 void FastADCComponent::add_on_conversion_callback(std::function<void(float)> &&callback) {
@@ -133,15 +133,11 @@ void FastADCComponent::adc_task(void *pv) {
 
 float HOT FastADCComponent::adc_cal_raw_to_mv(uint16_t adc_reading) {
 #ifdef USE_EXTERNAL_CALUBRATION
-  return calibration_data_[adc_reading];
+  return this->calibration_data_[adc_reading];
 #else
-    auto mv = esp_adc_cal_raw_to_voltage(adc_reading, &adc_cal_characteristics_);
-    return static_cast<float>(mv);
+  auto mv = esp_adc_cal_raw_to_voltage(adc_reading, &this->adc_cal_characteristics_);
+  return static_cast<float>(mv);
 #endif
-}
-
-uint32_t FastADCComponent::adc_oversampling_to_buffer_max_length(uint32_t oversampling) {
-  return oversampling * ADC_RESULT_BYTE;
 }
 
 }  // namespace fast_adc
