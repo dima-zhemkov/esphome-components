@@ -54,7 +54,7 @@ void AcVoltageSensor::add_on_period_callback(std::function<void(float)> &&callba
 }
 
 void HOT AcVoltageSensor::process_adc_conversion(float sample) {
-  auto voltage = abs((sample * this->multiplier_) - this->midpoint_);
+  auto voltage = abs(sample - this->midpoint_) * this->multiplier_;
   auto time = esp_timer_get_time();
 
   this->adc_conversion_callback_.call(voltage);

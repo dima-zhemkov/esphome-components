@@ -15,8 +15,8 @@ class AcVoltageSensor : public sensor::Sensor,
                         public voltage_sampler::VoltageSampler,
                         public Parented<fast_adc::FastADCComponent> {
  public:
-  void set_multiplier(float multiplier) { this->multiplier_ = multiplier; }
   void set_midpoint(float voltage) { this->midpoint_ = voltage; }
+  void set_multiplier(float multiplier) { this->multiplier_ = multiplier; }
   void set_mains_frequency(uint32_t frequency) { this->mains_frequency_ = frequency; }
 
   void setup() override;
@@ -30,8 +30,8 @@ class AcVoltageSensor : public sensor::Sensor,
 
  protected:
   adc_channel_t adc_channel_{ADC_CHANNEL_MAX};
-  float multiplier_{NAN};
   float midpoint_{NAN};
+  float multiplier_{NAN};
   uint32_t mains_frequency_{0};
 
   esp_timer_handle_t *timer_{nullptr};
