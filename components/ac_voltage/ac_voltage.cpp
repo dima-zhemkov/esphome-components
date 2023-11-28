@@ -76,22 +76,6 @@ void HOT AcVoltageSensor::measure_voltage() {
   this->voltage_rms_ = sqrtf(sum / count);
 
   this->period_callback_.call(this->voltage_rms_);
-
-#ifdef ESPHOME_LOG_HAS_VERBOSE
-  auto time = esp_timer_get_time();
-  this->min_period_samples_ = std::min(this->min_period_samples_, count);
-  this->max_period_samples_ = std::max(this->max_period_samples_, count);
-  if (time % 1000000 < 20000) {
-    auto min = this->min_period_samples_;
-    auto max = this->max_period_samples_;
-    auto voltage = this->voltage_rms_;
-    this->defer([count, min, max, voltage]() {
-      ESP_LOGV(TAG, "Count: %u, Min count: %u, Max count: %u, V RMS: %f", count, min, max, voltage);
-    });
-    this->min_period_samples_ = std::numeric_limits<uint32_t>::max();
-    this->max_period_samples_ = std::numeric_limits<uint32_t>::min();
-  }
-#endif
 }
 
 void HOT AcVoltageSensor::timer_callback(void *arg) {

@@ -5,7 +5,6 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/voltage_sampler/voltage_sampler.h"
 #include "esphome/core/hal.h"
-#include "esphome/core/log.h"
 
 namespace esphome {
 namespace ac_voltage {
@@ -44,11 +43,6 @@ class AcVoltageSensor : public sensor::Sensor,
   float voltage_samples_squared_sum_{0};
   uint32_t voltage_samples_count_{0};
   float voltage_rms_{0};
-
-#ifdef ESPHOME_LOG_HAS_VERBOSE
-  uint32_t min_period_samples_{std::numeric_limits<uint32_t>::max()};
-  uint32_t max_period_samples_{std::numeric_limits<uint32_t>::min()};
-#endif
 
   void process_adc_conversion(float sample);
   void measure_voltage();
