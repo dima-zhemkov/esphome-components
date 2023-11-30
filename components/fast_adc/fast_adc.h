@@ -21,6 +21,7 @@ class FastADCComponent : public Component {
 
   void setup() override;
   void dump_config() override;
+  float get_setup_priority() const override;
 
   void add_on_conversion_callback(std::function<void(float)> &&callback);
 

@@ -28,6 +28,8 @@ void AcTransferSwitchComponent::dump_config() {
   LOG_BINARY_SENSOR("  ", "Power Sensor", this->power_sensor_);
 }
 
+float AcTransferSwitchComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
+
 void HOT AcTransferSwitchComponent::set_power_source(PowerSource value) {
   if (!this->power_source_dedup_.next(value)) {
     return;

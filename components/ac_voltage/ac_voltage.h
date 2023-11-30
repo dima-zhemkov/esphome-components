@@ -20,6 +20,7 @@ class AcVoltageSensor : public sensor::Sensor,
 
   void setup() override;
   void dump_config() override;
+  float get_setup_priority() const override;
 
   void update() override;
   float sample() override;

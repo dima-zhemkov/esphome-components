@@ -81,6 +81,8 @@ void FastADCComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Calibration Data Size: %u", this->calibration_data_.size());
 }
 
+float FastADCComponent::get_setup_priority() const { return setup_priority::HARDWARE; }
+
 void FastADCComponent::add_on_conversion_callback(std::function<void(float)> &&callback) {
   this->conversion_callback_.add(std::move(callback));
 }

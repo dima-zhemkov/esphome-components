@@ -37,6 +37,8 @@ void AcVoltageSensor::dump_config() {
   LOG_UPDATE_INTERVAL(this);
 }
 
+float AcVoltageSensor::get_setup_priority() const { return setup_priority::DATA; }
+
 void AcVoltageSensor::update() {
   auto voltage = this->sample();
   ESP_LOGV(TAG, "'%s': Got RMS voltage=%.4fV", this->get_name().c_str(), voltage);

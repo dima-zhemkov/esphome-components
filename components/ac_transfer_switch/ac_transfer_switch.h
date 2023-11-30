@@ -21,6 +21,7 @@ class AcTransferSwitchComponent : public Component, public Parented<ac_voltage::
 
   void setup() override;
   void dump_config() override;
+  float get_setup_priority() const override;
 
  protected:
   output::BinaryOutput *output_{nullptr};
