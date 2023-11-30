@@ -37,7 +37,7 @@ class AcTransferSwitchComponent : public Component, public Parented<ac_voltage::
   };
 
   Deduplicator<PowerSource> power_source_dedup_;
-  PowerSource power_source_{PowerSource::PRIMARY};
+  PowerSource power_source_{PowerSource::UNKNOWN};
 
   esp_timer_handle_t *timer_{nullptr};
   int64_t undervoltage_start_{0};
