@@ -11,7 +11,7 @@ from esphome.const import (
 
 CODEOWNERS = ["@dima-zhemkov"]
 
-AUTO_LOAD = ["binary_sensor"]
+AUTO_LOAD = ["output", "binary_sensor"]
 
 CONF_TRANSFER_SWITCH_ID = "transfer_switch_id"
 CONF_AC_VOLTAGE = "ac_voltage"
