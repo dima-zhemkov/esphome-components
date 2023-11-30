@@ -32,13 +32,12 @@ class AcTransferSwitchComponent : public Component, public Parented<ac_voltage::
   float primary_switch_voltage_rms_threshold_{NAN};
 
   enum class PowerSource : uint32_t {
-    UNKNOWN = 0,
     PRIMARY = 1,
     BACKUP = 2,
   };
 
   Deduplicator<PowerSource> power_source_dedup_;
-  PowerSource power_source_{PowerSource::UNKNOWN};
+  PowerSource power_source_{PowerSource::PRIMARY};
 
   esp_timer_handle_t *timer_{nullptr};
   int64_t undervoltage_start_{0};

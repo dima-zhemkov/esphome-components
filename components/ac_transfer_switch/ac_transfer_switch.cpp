@@ -9,7 +9,13 @@ static const char *const TAG = "ac_transfer_switch";
 void AcTransferSwitchComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up AC Transfer Switch...");
 
-  this->set_power_source(PowerSource::PRIMARY);
+  if (this->output_) {
+    this->output_->set_state(this->power_source_ == PowerSource::BACKUP);
+  }
+
+  if (this->power_sensor_) {
+    this->power_sensor_->publish_state(this->power_source_ == PowerSource::PRIMARY);
+  }
 
   this->parent_->add_on_adc_conversion_callback([this](float voltage) { this->process_adc_conversion(voltage); });
   this->parent_->add_on_period_callback([this](float voltage_rms) { this->process_period(voltage_rms); });
