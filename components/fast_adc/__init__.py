@@ -33,7 +33,8 @@ ADC_PIN_TO_CHANNEL = {
 
 def validate_adc_pin(value):
     if CORE.is_esp32:
-        value = pins.internal_gpio_input_pin_number(value)
+        conf = pins.internal_gpio_input_pin_schema(value)
+        value = conf[CONF_NUMBER]
         variant = get_esp32_variant()
         if variant != VARIANT_ESP32:
             raise cv.Invalid(f"This ESP32 variant ({variant}) is not supported")
@@ -41,7 +42,7 @@ def validate_adc_pin(value):
         if value not in ADC_PIN_TO_CHANNEL:
             raise cv.Invalid(f"{variant} doesn't support ADC on this pin")
 
-        return pins.internal_gpio_input_pin_schema(value)
+        return conf
 
     raise NotImplementedError
 
@@ -62,7 +63,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(FastADCComponent),
-            cv.Required(CONF_PIN): pins.internal_gpio_input_pin_schema,
+            cv.Required(CONF_PIN): validate_adc_pin,
             cv.Required(CONF_FREQUENCY): cv.All(cv.frequency, cv.int_range(min=10, max=200000)),
             cv.Optional(CONF_OVERSAMPLING, default=20): cv.int_range(min=10, max=2000),
             cv.Optional(CONF_CALIBRATION): cv.ensure_list(cv.positive_float),
