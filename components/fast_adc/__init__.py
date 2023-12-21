@@ -62,7 +62,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(FastADCComponent),
-            cv.Required(CONF_PIN): validate_adc_pin,
+            cv.Required(CONF_PIN): pins.internal_gpio_input_pin_schema,
             cv.Required(CONF_FREQUENCY): cv.All(cv.frequency, cv.int_range(min=10, max=200000)),
             cv.Optional(CONF_OVERSAMPLING, default=20): cv.int_range(min=10, max=2000),
             cv.Optional(CONF_CALIBRATION): cv.ensure_list(cv.positive_float),
