@@ -2,6 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/output/float_output.h"
+#include "esphome/components/ledc/ledc_output.h"
 #include "esphome/components/light/light_output.h"
 
 namespace esphome {
@@ -9,8 +10,8 @@ namespace ledc_hbridge_light {
 
 class LedcHbridgeLightOutput : public light::LightOutput {
  public:
-  void set_cold_white(output::FloatOutput *cold_white) { cold_white_ = cold_white; }
-  void set_warm_white(output::FloatOutput *warm_white) { warm_white_ = warm_white; }
+  void set_cold_white(ledc::LEDCOutput *cold_white) { cold_white_ = cold_white; }
+  void set_warm_white(ledc::LEDCOutput *warm_white) { warm_white_ = warm_white; }
   void set_cold_white_temperature(float cold_white_temperature) { cold_white_temperature_ = cold_white_temperature; }
   void set_warm_white_temperature(float warm_white_temperature) { warm_white_temperature_ = warm_white_temperature; }
   void set_constant_brightness(bool constant_brightness) { constant_brightness_ = constant_brightness; }
