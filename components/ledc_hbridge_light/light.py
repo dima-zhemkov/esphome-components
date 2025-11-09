@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import light, output, ledc
+from esphome.components import light
+from esphome.components.ledc.output import LEDCOutput
 from esphome.const import (
     CONF_CONSTANT_BRIGHTNESS,
     CONF_OUTPUT_ID,
@@ -21,8 +22,8 @@ CONFIG_SCHEMA = cv.All(
     light.RGB_LIGHT_SCHEMA.extend(
         {
             cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(LedcHbridgeLightOutput),
-            cv.Required(CONF_COLD_WHITE): cv.use_id(ledc.LEDCOutput),
-            cv.Required(CONF_WARM_WHITE): cv.use_id(ledc.LEDCOutput),
+            cv.Required(CONF_COLD_WHITE): cv.use_id(LEDCOutput),
+            cv.Required(CONF_WARM_WHITE): cv.use_id(LEDCOutput),
             cv.Optional(CONF_COLD_WHITE_COLOR_TEMPERATURE): cv.color_temperature,
             cv.Optional(CONF_WARM_WHITE_COLOR_TEMPERATURE): cv.color_temperature,
             cv.Optional(CONF_CONSTANT_BRIGHTNESS, default=False): cv.boolean,
