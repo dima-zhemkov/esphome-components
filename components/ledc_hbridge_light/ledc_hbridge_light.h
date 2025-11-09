@@ -26,7 +26,7 @@ class LedcHbridgeLightOutput : public light::LightOutput {
     state->current_values_as_cwww(&cwhite, &wwhite, this->constant_brightness_);
     this->cold_white_->set_level(cwhite);
 
-    float phase_angle = cwhite * 360.0f;
+    float phase_angle = cwhite * 360.0f - (360.0f / 4096.0f);
     float adjusted_wwhite = wwhite < 1.0f ? wwhite - (1.0f / 4096.0f) : wwhite;
     this->warm_white_->set_phase_angle(phase_angle);
     this->warm_white_->set_level(adjusted_wwhite);
