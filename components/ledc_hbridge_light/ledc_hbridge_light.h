@@ -1,7 +1,6 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/output/float_output.h"
 #include "esphome/components/ledc/ledc_output.h"
 #include "esphome/components/light/light_output.h"
 
@@ -26,12 +25,15 @@ class LedcHbridgeLightOutput : public light::LightOutput {
     float cwhite, wwhite;
     state->current_values_as_cwww(&cwhite, &wwhite, this->constant_brightness_);
     this->cold_white_->set_level(cwhite);
+
+    float phase_angle = (cwhite * 360.0f);
+    this->warm_white_->set_phase_angle(phase_angle);
     this->warm_white_->set_level(wwhite);
   }
 
  protected:
-  output::FloatOutput *cold_white_;
-  output::FloatOutput *warm_white_;
+  ledc::LEDCOutput *cold_white_;
+  ledc::LEDCOutput *warm_white_;
   float cold_white_temperature_{0};
   float warm_white_temperature_{0};
   bool constant_brightness_{false};
