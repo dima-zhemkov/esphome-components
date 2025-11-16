@@ -17,6 +17,7 @@ class LedcHbridgeLightOutput : public light::LightOutput {
   void set_max_frequency(float max_frequency) { max_frequency_ = max_frequency; }
   void set_min_frequency(float min_frequency) { min_frequency_ = min_frequency; }
   void set_min_pulse(float min_pulse) { min_pulse_ = min_pulse; }
+  void set_low_frequency_brightness_correction(float correction) { low_freq_brightness_correction_ = correction; }
   light::LightTraits get_traits() override;
   void write_state(light::LightState *state) override;
 
@@ -30,6 +31,7 @@ class LedcHbridgeLightOutput : public light::LightOutput {
   float min_frequency_{0};
   float min_pulse_{0};
   float frequency_{0};
+  float low_freq_brightness_correction_{1.0f};
   
   float calculate_frequency(float state, float max_power, float min_power);
   float adjust_state(float state, float frequency, float max_power, float min_power);
