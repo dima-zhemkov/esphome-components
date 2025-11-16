@@ -36,6 +36,9 @@ class LedcHbridgeLightOutput : public light::LightOutput {
 
     this->cold_white_->update_frequency(frequency);
     this->warm_white_->update_frequency(frequency);
+    
+    ESP_LOGD("ledc_hbridge_light", "Setting levels: cwhite=%.6f, wwhite=%.6f at freq=%.2f Hz", cwhite, wwhite, frequency);
+    
     this->warm_white_->set_level(cwhite);
     this->cold_white_->set_level(wwhite);
   }
