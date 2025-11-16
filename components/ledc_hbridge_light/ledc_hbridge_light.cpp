@@ -48,7 +48,7 @@ float LedcHbridgeLightOutput::adjust_state(float state, float frequency, float m
   
   float corrected_duty_cycle;
   if (unscaled_duty_cycle >= min_duty_cycle) {
-    corrected_duty_cycle = unscaled_duty_cycle;
+    corrected_duty_cycle = state;
   } else if (unscaled_duty_cycle > 0.0f) {
     corrected_duty_cycle = this->min_pulse_ * frequency;
   } else {
