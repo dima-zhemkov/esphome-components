@@ -28,16 +28,14 @@ class LedcHbridgeLightOutput : public light::LightOutput {
     float cwhite, wwhite;
     state->current_values_as_cwww(&cwhite, &wwhite, this->constant_brightness_);
 
-    float frequency_cwhite = this->calculate_frequency(cwhite);
-    float frequency_wwhite = this->calculate_frequency(wwhite);
+    float frequency_cwhite = this->calculate_frequency(cwhite, this->cold_white_->get_max_power(), this->cold_white_->get_min_power());
+    float frequency_wwhite = this->calculate_frequency(wwhite, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
     float frequency = frequency_cwhite < frequency_wwhite ? frequency_cwhite : frequency_wwhite;
-    cwhite = this->adjust_state(cwhite, frequency);
-    wwhite = this->adjust_state(wwhite, frequency);
+    cwhite = this->adjust_state(cwhite, frequency, this->cold_white_->get_max_power(), this->cold_white_->get_min_power());
+    wwhite = this->adjust_state(wwhite, frequency, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
 
     this->cold_white_->update_frequency(frequency);
     this->warm_white_->update_frequency(frequency);
-    
-    ESP_LOGD("ledc_hbridge_light", "Setting levels: cwhite=%.9f, wwhite=%.9f at freq=%.9f Hz", cwhite, wwhite, frequency);
     
     this->warm_white_->set_level(cwhite);
     this->cold_white_->set_level(wwhite);
@@ -53,8 +51,8 @@ class LedcHbridgeLightOutput : public light::LightOutput {
   float min_frequency_{0};
   float min_pulse_{0};
   
-  float calculate_frequency(float state);
-  float adjust_state(float state, float frequency);
+  float calculate_frequency(float state, float max_power, float min_power);
+  float adjust_state(float state, float frequency, float max_power, float min_power);
 };
 
 }  // namespace ledc_hbridge_light

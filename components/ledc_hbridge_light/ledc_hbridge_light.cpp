@@ -6,18 +6,23 @@ namespace ledc_hbridge_light {
 
 static const char *const TAG = "ledc_hbridge_light";
 
-float LedcHbridgeLightOutput::calculate_frequency(float state) {
-  float input = state;
-  float frequency;
-
-  float T_max = 1.0f / this->max_frequency_;
-  float D_min = this->min_pulse_ / T_max;
+float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, float min_power) {
+  float unscaled_duty_cycle;
+  if (max_power > min_power && state > min_power) {
+    unscaled_duty_cycle = (state - min_power) / (max_power - min_power);
+  } else {
+    unscaled_duty_cycle = state;
+  }
   
-  if (input >= D_min) {
+  float max_period = 1.0f / this->max_frequency_;
+  float min_duty_cycle = this->min_pulse_ / max_period;
+  
+  float frequency;
+  if (unscaled_duty_cycle >= min_duty_cycle) {
     frequency = this->max_frequency_;
-  } else if (input > 0.0f) {
-    float T = this->min_pulse_ / input;
-    frequency = 1.0f / T;
+  } else if (unscaled_duty_cycle > 0.0f) {
+    float required_period = this->min_pulse_ / unscaled_duty_cycle;
+    frequency = 1.0f / required_period;
     
     if (frequency < this->min_frequency_)
       frequency = this->min_frequency_;
@@ -30,23 +35,34 @@ float LedcHbridgeLightOutput::calculate_frequency(float state) {
   return frequency;
 }
 
-float LedcHbridgeLightOutput::adjust_state(float state, float frequency) {
-  float input = state;
-  float adjusted_state;
-
-  float T_max = 1.0f / this->max_frequency_;
-  float D_min = this->min_pulse_ / T_max;
-
-  if (input >= D_min) {
-    adjusted_state = input;
-  } else if (input > 0.0f) {
-    adjusted_state = this->min_pulse_ * frequency;
-    float expected_pulse_ns = adjusted_state * (1.0f / frequency) * 1e9;
+float LedcHbridgeLightOutput::adjust_state(float state, float frequency, float max_power, float min_power) {
+  float unscaled_duty_cycle;
+  if (max_power > min_power && state > min_power) {
+    unscaled_duty_cycle = (state - min_power) / (max_power - min_power);
   } else {
-    adjusted_state = 0.0f;
+    unscaled_duty_cycle = state;
   }
   
-  return adjusted_state;
+  float max_period = 1.0f / this->max_frequency_;
+  float min_duty_cycle = this->min_pulse_ / max_period;
+  
+  float corrected_duty_cycle;
+  if (unscaled_duty_cycle >= min_duty_cycle) {
+    corrected_duty_cycle = unscaled_duty_cycle;
+  } else if (unscaled_duty_cycle > 0.0f) {
+    corrected_duty_cycle = this->min_pulse_ * frequency;
+  } else {
+    corrected_duty_cycle = 0.0f;
+  }
+  
+  float scaled_output;
+  if (max_power > min_power) {
+    scaled_output = (corrected_duty_cycle - min_power) / (max_power - min_power);
+  } else {
+    scaled_output = corrected_duty_cycle;
+  }
+  
+  return scaled_output;
 }
 
 }  // namespace ledc_hbridge_light
