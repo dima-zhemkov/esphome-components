@@ -18,6 +18,7 @@ void LedcHbridgeLightOutput::write_state(light::LightState *state) {
   float cwhite, wwhite;
   state->current_values_as_cwww(&cwhite, &wwhite, this->constant_brightness_);
 
+  float old_frequency = this->cold_white_->get_frequency();
   float frequency_cwhite = this->calculate_frequency(cwhite, this->cold_white_->get_max_power(), this->cold_white_->get_min_power());
   float frequency_wwhite = this->calculate_frequency(wwhite, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
   float frequency = frequency_cwhite > frequency_wwhite ? frequency_cwhite : frequency_wwhite;
@@ -25,10 +26,13 @@ void LedcHbridgeLightOutput::write_state(light::LightState *state) {
   wwhite = this->adjust_state(wwhite, frequency, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
 
   this->cold_white_->set_level(cwhite);
-  this->cold_white_->update_frequency(frequency);
-
   this->warm_white_->set_level(wwhite);
-  this->warm_white_->update_frequency(frequency);
+
+  if (frequency != old_frequency)
+  {
+    this->cold_white_->update_frequency(frequency);
+    this->warm_white_->update_frequency(frequency);
+  }
 }
 
 float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, float min_power) {
