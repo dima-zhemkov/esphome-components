@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_CONSTANT_BRIGHTNESS, default=False): cv.boolean,
             cv.Optional(CONF_MAX_FREQUENCY, default="19531Hz"): cv.frequency,
             cv.Optional(CONF_MIN_FREQUENCY, default="1220Hz"): cv.frequency,
-            cv.Optional(CONF_MIN_PULSE, default="800ns"): cv.positive_time_period_nanoseconds,
+            cv.Optional(CONF_MIN_PULSE, default="500ns"): cv.positive_time_period_nanoseconds,
         }
     ),
     cv.has_none_or_all_keys(
