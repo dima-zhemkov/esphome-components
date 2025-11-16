@@ -47,8 +47,9 @@ float LedcHbridgeLightOutput::adjust_state(float state, float frequency) {
     adjusted_state = input;
   } else if (input > 0.0f) {
     adjusted_state = this->min_pulse_ * frequency;
-    ESP_LOGD(TAG, "adjust_state: input=%.4f < D_min=%.4f, adjusted=%.4f (min_pulse=%.6f * freq=%.2f)", 
-             input, D_min, adjusted_state, this->min_pulse_, frequency);
+    float expected_pulse_ns = adjusted_state * (1.0f / frequency) * 1e9;
+    ESP_LOGD(TAG, "adjust_state: input=%.4f < D_min=%.4f, adjusted=%.4f, expected_pulse=%.1f ns (min_pulse=%.9f s * freq=%.2f Hz)", 
+             input, D_min, adjusted_state, expected_pulse_ns, this->min_pulse_, frequency);
   } else {
     adjusted_state = 0.0f;
   }
