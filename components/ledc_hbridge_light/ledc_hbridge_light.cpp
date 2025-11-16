@@ -5,6 +5,7 @@ namespace esphome {
 namespace ledc_hbridge_light {
 
 static const char *const TAG = "ledc_hbridge_light";
+static const float step = 5000.0f;
 
 light::LightTraits LedcHbridgeLightOutput::get_traits() {
   auto traits = light::LightTraits();
@@ -47,6 +48,7 @@ float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, 
   } else if (real_duty_cycle > 0.0f) {
     float required_period = this->min_pulse_ / real_duty_cycle;
     frequency = 1.0f / required_period;
+    frequency = round(frequency / step) * step;
     
     if (frequency < this->min_frequency_)
       frequency = this->min_frequency_;
