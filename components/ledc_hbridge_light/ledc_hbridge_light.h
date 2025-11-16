@@ -17,29 +17,8 @@ class LedcHbridgeLightOutput : public light::LightOutput {
   void set_max_frequency(float max_frequency) { max_frequency_ = max_frequency; }
   void set_min_frequency(float min_frequency) { min_frequency_ = min_frequency; }
   void set_min_pulse(float min_pulse) { min_pulse_ = min_pulse; }
-  light::LightTraits get_traits() override {
-    auto traits = light::LightTraits();
-    traits.set_supported_color_modes({light::ColorMode::COLD_WARM_WHITE});
-    traits.set_min_mireds(this->cold_white_temperature_);
-    traits.set_max_mireds(this->warm_white_temperature_);
-    return traits;
-  }
-  void write_state(light::LightState *state) override {
-    float cwhite, wwhite;
-    state->current_values_as_cwww(&cwhite, &wwhite, this->constant_brightness_);
-
-    float frequency_cwhite = this->calculate_frequency(cwhite, this->cold_white_->get_max_power(), this->cold_white_->get_min_power());
-    float frequency_wwhite = this->calculate_frequency(wwhite, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
-    float frequency = frequency_cwhite < frequency_wwhite ? frequency_cwhite : frequency_wwhite;
-    cwhite = this->adjust_state(cwhite, frequency, this->cold_white_->get_max_power(), this->cold_white_->get_min_power());
-    wwhite = this->adjust_state(wwhite, frequency, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
-
-    this->cold_white_->update_frequency(frequency);
-    this->warm_white_->update_frequency(frequency);
-    
-    this->warm_white_->set_level(cwhite);
-    this->cold_white_->set_level(wwhite);
-  }
+  light::LightTraits get_traits() override;
+  void write_state(light::LightState *state) override;
 
  protected:
   ledc::LEDCOutput *cold_white_;
@@ -53,6 +32,8 @@ class LedcHbridgeLightOutput : public light::LightOutput {
   
   float calculate_frequency(float state, float max_power, float min_power);
   float adjust_state(float state, float frequency, float max_power, float min_power);
+  float get_unscaled_duty_cycle(float state, float max_power, float min_power);
+  float get_real_duty_cycle(float state, float max_power, float min_power);
 };
 
 }  // namespace ledc_hbridge_light
