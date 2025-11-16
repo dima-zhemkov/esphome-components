@@ -1,5 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+from esphome import core
 from esphome.components import light
 from esphome.components.ledc.output import LEDCOutput
 from esphome.const import (
@@ -15,6 +16,10 @@ CODEOWNERS = ["@dima-zhemkov"]
 
 DEPENDENCIES = ["esp32"]
 
+CONF_MAX_FREQUENCY = "max_frequency"
+CONF_MIN_FREQUENCY = "min_frequency"
+CONF_MIN_PULSE = "min_pulse"
+
 ledc_hbridge_light_ns = cg.esphome_ns.namespace("ledc_hbridge_light")
 LedcHbridgeLightOutput = ledc_hbridge_light_ns.class_("LedcHbridgeLightOutput", light.LightOutput)
 
@@ -27,6 +32,9 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_COLD_WHITE_COLOR_TEMPERATURE): cv.color_temperature,
             cv.Optional(CONF_WARM_WHITE_COLOR_TEMPERATURE): cv.color_temperature,
             cv.Optional(CONF_CONSTANT_BRIGHTNESS, default=False): cv.boolean,
+            cv.Optional(CONF_MAX_FREQUENCY, default="19531Hz"): cv.frequency,
+            cv.Optional(CONF_MIN_FREQUENCY, default="1220Hz"): cv.frequency,
+            cv.Optional(CONF_MIN_PULSE, default="800us"): cv.positive_time_period_seconds,
         }
     ),
     cv.has_none_or_all_keys(
@@ -51,3 +59,6 @@ async def to_code(config):
         cg.add(var.set_warm_white_temperature(warm_white_color_temperature))
 
     cg.add(var.set_constant_brightness(config[CONF_CONSTANT_BRIGHTNESS]))
+    cg.add(var.set_max_frequency(config[CONF_MAX_FREQUENCY]))
+    cg.add(var.set_min_frequency(config[CONF_MIN_FREQUENCY]))
+    cg.add(var.set_min_pulse(config[CONF_MIN_PULSE]))
