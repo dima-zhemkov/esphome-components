@@ -61,4 +61,4 @@ async def to_code(config):
     cg.add(var.set_constant_brightness(config[CONF_CONSTANT_BRIGHTNESS]))
     cg.add(var.set_max_frequency(config[CONF_MAX_FREQUENCY]))
     cg.add(var.set_min_frequency(config[CONF_MIN_FREQUENCY]))
-    cg.add(var.set_min_pulse(config[CONF_MIN_PULSE]) / 1e9)
+    cg.add(var.set_min_pulse(config[CONF_MIN_PULSE] / 1e9))
