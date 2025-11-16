@@ -34,7 +34,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_CONSTANT_BRIGHTNESS, default=False): cv.boolean,
             cv.Optional(CONF_MAX_FREQUENCY, default="19531Hz"): cv.frequency,
             cv.Optional(CONF_MIN_FREQUENCY, default="1220Hz"): cv.frequency,
-            cv.Optional(CONF_MIN_PULSE, default="800us"): cv.positive_time_period,
+            cv.Optional(CONF_MIN_PULSE, default="800ns"): cv.positive_time_period_nanoseconds,
         }
     ),
     cv.has_none_or_all_keys(
@@ -61,4 +61,4 @@ async def to_code(config):
     cg.add(var.set_constant_brightness(config[CONF_CONSTANT_BRIGHTNESS]))
     cg.add(var.set_max_frequency(config[CONF_MAX_FREQUENCY]))
     cg.add(var.set_min_frequency(config[CONF_MIN_FREQUENCY]))
-    cg.add(var.set_min_pulse(config[CONF_MIN_PULSE]))
+    cg.add(var.set_min_pulse(config[CONF_MIN_PULSE]) / 1e9)
