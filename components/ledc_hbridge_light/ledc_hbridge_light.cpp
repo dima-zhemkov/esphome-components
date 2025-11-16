@@ -13,7 +13,7 @@ float LedcHbridgeLightOutput::calculate_frequency(float state) {
   float T_max = 1.0f / this->max_frequency_;
   float D_min = this->min_pulse_ / T_max;
   
-  ESP_LOGD(TAG, "calc_freq: state=%.4f, T_max=%.6f, min_pulse=%.6f, D_min=%.4f", 
+  ESP_LOGD(TAG, "calc_freq: state=%.4f, T_max=%.6f, min_pulse=%.9f, D_min=%.4f", 
            state, T_max, this->min_pulse_, D_min);
 
   if (input >= D_min) {
