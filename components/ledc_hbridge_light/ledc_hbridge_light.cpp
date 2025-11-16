@@ -30,7 +30,7 @@ void LedcHbridgeLightOutput::write_state(light::LightState *state) {
     this->cold_white_->set_level(0);
     this->warm_white_->set_level(0);
 
-    ESP_LOGD(TAG, "Frequency changed: %.0f Hz -> %.0f Hz", this->frequency_, frequency);
+    ESP_LOGD(TAG, "Frequency changed: %.0f Hz -> %.0f Hz. Cold: %.9f, Warm: %.9f", this->frequency_, frequency, cwhite, wwhite);
     this->cold_white_->update_frequency(frequency);
     this->warm_white_->update_frequency(frequency);
     this->frequency_ = frequency;
