@@ -24,10 +24,10 @@ void LedcHbridgeLightOutput::write_state(light::LightState *state) {
   cwhite = this->adjust_state(cwhite, frequency, this->cold_white_->get_max_power(), this->cold_white_->get_min_power());
   wwhite = this->adjust_state(wwhite, frequency, this->warm_white_->get_max_power(), this->warm_white_->get_min_power());
 
-  this->warm_white_->set_level(cwhite);
+  this->cold_white_->set_level(cwhite);
   this->cold_white_->update_frequency(frequency);
 
-  this->cold_white_->set_level(wwhite);
+  this->warm_white_->set_level(wwhite);
   this->warm_white_->update_frequency(frequency);
 }
 
