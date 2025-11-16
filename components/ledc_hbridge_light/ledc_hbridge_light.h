@@ -29,6 +29,7 @@ class LedcHbridgeLightOutput : public light::LightOutput {
   float max_frequency_{0};
   float min_frequency_{0};
   float min_pulse_{0};
+  float frequency_{0};
   
   float calculate_frequency(float state, float max_power, float min_power);
   float adjust_state(float state, float frequency, float max_power, float min_power);
