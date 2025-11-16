@@ -63,6 +63,8 @@ float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, 
 }
 
 float LedcHbridgeLightOutput::adjust_state(float state, float frequency, float max_power, float min_power) {
+  return state;
+  
   float real_duty_cycle = get_real_duty_cycle(state, max_power, min_power);
   
   float max_period = 1.0f / this->max_frequency_;
