@@ -45,6 +45,8 @@ float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, 
   
   float frequency;
   if (real_duty_cycle >= min_duty_cycle || this->min_frequency_ == 0.0f) {
+    frequency = this->max_frequency_;
+  } else {
     float required_period = this->min_pulse_ / real_duty_cycle;
     frequency = 1.0f / required_period;
     
@@ -54,8 +56,6 @@ float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, 
       frequency = this->max_frequency_;
     
     frequency = round(frequency);
-  } else {
-    frequency = this->min_frequency_;
   }
   
   return frequency;
