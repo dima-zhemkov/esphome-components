@@ -27,16 +27,13 @@ void LedcHbridgeLightOutput::write_state(light::LightState *state) {
 
   if (frequency != this->frequency_)
   {
-    ESP_LOGD(TAG, "Frequency changed: %.0f Hz -> %.0f Hz. Cold: %.9f, Warm: %.9f", this->frequency_, frequency, cwhite, wwhite);
     this->cold_white_->update_frequency(frequency);
     this->warm_white_->update_frequency(frequency);
     this->frequency_ = frequency;
   }
-  else
-  {
-    this->cold_white_->set_level(cwhite);
-    this->warm_white_->set_level(wwhite);
-  }
+
+  this->cold_white_->set_level(cwhite);
+  this->warm_white_->set_level(wwhite);
 }
 
 float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, float min_power) {
@@ -47,7 +44,15 @@ float LedcHbridgeLightOutput::calculate_frequency(float state, float max_power, 
   
   float frequency;
   if (real_duty_cycle >= min_duty_cycle || this->min_frequency_ == 0.0f) {
-    frequency = this->max_frequency_;
+    float required_period = this->min_pulse_ / real_duty_cycle;
+    frequency = 1.0f / required_period;
+    
+    if (frequency < this->min_frequency_)
+      frequency = this->min_frequency_;
+    else if (frequency > this->max_frequency_)
+      frequency = this->max_frequency_;
+    
+    frequency = round(frequency);
   } else {
     frequency = this->min_frequency_;
   }
